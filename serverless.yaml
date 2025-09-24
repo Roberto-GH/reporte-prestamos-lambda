@@ -1,0 +1,31 @@
+service: reporte-prestamos-servicio
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:Scan"          
+          Resource: "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:provider.environment.DYNAMODB_TABLE_NAME}"
+        - Effect: "Allow"
+          Action:
+            - "ses:SendEmail"          
+          Resource: "*"
+
+  environment:
+    DYNAMODB_TABLE_NAME: 'Reports-Summary-Production-Table'
+    SENDER_EMAIL: 'roberthdrums@gmail.com'
+    RECIPIENT_EMAILS: 'roberthdrums@yahoo.com'
+
+functions:
+  enviarReporte:
+    handler: handler.lambda_handler
+    description: "Función que lee un reporte de DynamoDB y lo envía por correo."
+    events:      
+      - schedule: cron(0 12 * * ? *)    
