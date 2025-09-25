@@ -1,0 +1,5 @@
+enviarReporte:
+  handler: handler.lambda_handler
+  description: "Función que lee un reporte de DynamoDB y lo envía por correo."
+  events:      
+    - schedule: cron(0 12 * * ? *)
